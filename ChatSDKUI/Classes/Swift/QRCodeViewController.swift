@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import ChatSDK
 import EFQRCode
 
 public class QRCodeViewController: UIViewController {
@@ -35,8 +34,20 @@ public class QRCodeViewController: UIViewController {
     
     @objc public func setCode(code: String) {
         self.code = code
-        if let image = EFQRCode.generate(content: code, watermark: style?.cgImage) {
+        
+        let generator = if let image = style?.cgImage {
+            try? EFQRCode.Generator(code, style: .image(
+                params: .init(image: .init(image: .static(image: image), allowTransparent: true)))
+            )
+        } else {
+            try? EFQRCode.Generator(code, style: .basic(params: .init()))
+        }
+
+        if let image = try? generator?.toImage(width: 360).cgImage {
             qrImage = UIImage(cgImage: image)
+            print("Create QRCode image success \(image)")
+        } else {
+            print("Create QRCode image failed!")
         }
     }
     

@@ -63,6 +63,7 @@
             NSLog(@"FCM getToken %@", error.localizedDescription);
         }
     }];
+    
 
     NSLog(@"FCM didRegisterForRemoteNotificationsWithDeviceToken");
 }
