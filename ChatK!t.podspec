@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "ChatK!t"
-  s.version          = "5.2.2"
+  s.version          = "5.2.3"
   s.summary          = "ChatK!t - Message View"
   s.homepage         = "https://chatk.it"
   s.license          = { :type => 'Apache 2.0' }
@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => "https://github.com/chat-sdk/chat-sdk-ios.git", :tag => s.version.to_s }
   s.module_name      = 'ChatKit'
 
-  s.platform     = :ios, '17.0'
+  s.platform     = :ios, '13.0'
   s.requires_arc = true
   s.swift_version = "5.0"
   s.default_subspec = 'ChatK!t'
@@ -39,6 +39,7 @@ Pod::Spec.new do |s|
   
   s.subspec 'ChatSDK' do |s| 
     s.source_files = ['ChatK!t/ChatSDK/**/*']
+    s.dependency 'ChatSDK/Core'
     s.dependency 'ChatSDK/UI'
     s.dependency 'ChatK!t/ChatK!t'
   end

@@ -10,6 +10,7 @@ import Foundation
 import ChatSDK
 import AVKit
 import ZLImageEditor
+import RxSwift
 
 open class FileKeys {
     
@@ -122,7 +123,7 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
     open func addObservers() {
 
         // Add a listener to add outgoing messages to the download area so we don't have to download them again...
-        observers.add(BChatSDK.hook().add(BHook(onMain:{ [weak self] input in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] input in
             if let message = input?[bHook_PMessage] as? PMessage, let data = input?[bHook_NSData] as? Data {
                 if let m = self?.model?.messagesModel.message(for: message.entityID()) as? UploadableMessage {
                         // Get the extension
@@ -132,7 +133,7 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
             }
         }), withName: bHookMessageDidUpload))
 
-        observers.add(BChatSDK.hook().add(BHook(onMain:{ [weak self] input in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] input in
             if let user = input?[bHook_PUser] as? PUser {
                 if self?.thread?.contains(user) ?? false {
                     self?.weakVC?.updateNavigationBar()
@@ -140,7 +141,7 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
             }
         }), withName: bHookUserLastOnlineUpdated))
 
-        observers.add(BChatSDK.hook().add(BHook(onMain:{ [weak self] input in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] input in
             if let thread = input?[bHook_PThread] as? PThread {
                 if self?.thread?.entityID() == thread.entityID() {
                     self?.weakVC?.updateNavigationBar()
@@ -157,7 +158,7 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
 
 
         // Add a listener to add outgoing messages to the download area so we don't have to download them again...
-        observers.add(BChatSDK.hook().add(BHook(onMain: { [weak self] input in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] input in
             self?.updateConnectionStatus()
         }), withNames: [bHookInternetConnectivityDidChange, bHookServerConnectionStatusUpdated]))
                 
@@ -169,7 +170,7 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
             }
         }, weight: 50), withName: bHookMessageWillUpload))
         
-        observers.add(BChatSDK.hook().add(BHook(onMain:{ [weak self] input in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] input in
             if let message = input?[bHook_PMessage] as? PMessage, let progress = input?[bHook_ObjectValue] as? Progress {
                 if let content = self?.model?.messagesModel.message(for: message.entityID())?.messageContent() as? UploadableContent {
                     //
@@ -181,7 +182,7 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
             }
         }), withName: bHookMessageUploadProgress))
         
-        observers.add(BChatSDK.hook().add(BHook(onMain:{ [weak self] data in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] data in
             if let thread = data?[bHook_PThread] as? PThread, thread.isEqual(self?.thread) {
                 if let text = data?[bHook_NSString] as? String {
                     self?.weakVC?.setSubtitle(text: text)
@@ -191,7 +192,7 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
             }
         }), withName: bHookTypingStateUpdated))
 
-        observers.add(BChatSDK.hook().add(BHook(onMain: { [unowned self] data in
+        observers.add(BChatSDK.hook().add(BHook({ [unowned self] data in
 //            weakVC?.showError(message: t(Strings.messageSendFailed), completion: nil)
             
             if let messageId = data?[bHook_StringId] as? String {
@@ -217,14 +218,14 @@ open class  ChatKitIntegration: NSObject, ChatViewControllerDelegate, ChatModelD
             }
         }), withName: bHookUserUpdated))
         
-        observers.add(BChatSDK.hook().add(BHook(onMain:{ [weak self] data in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] data in
             if  let thread = data?[bHook_PThread] as? PThread, thread.isEqual(to: self?.thread), let user = data?[bHook_PUser] as? PUser, user.isMe() {
                 self?.updateViewForPermissions(user, thread: thread)
             }
         }), withName: bHookThreadUserRoleUpdated))
         
         // Add the observers
-        observers.add(BChatSDK.hook().add(BHook(onMain: { [weak self] data in
+        observers.add(BChatSDK.hook().add(BHook({ [weak self] data in
             if let message = data?[bHook_PMessage] as? PMessage, let t = message.thread(), let user = message.userModel(), let thread = self?.thread {
                 if (t.isEqual(thread)) {
                     if !user.isMe() {
